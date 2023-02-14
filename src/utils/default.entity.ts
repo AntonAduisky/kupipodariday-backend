@@ -1,3 +1,4 @@
+import { IsDate } from 'class-validator';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -11,8 +12,10 @@ export abstract class DefaultEntity {
   id: number;
 
   @CreateDateColumn()
+  @IsDate()
   createdAt: Date;
 
   @UpdateDateColumn()
+  @IsDate()
   updatedAt: Date;
 }

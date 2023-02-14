@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import config from './config/config';
+import configuration from './configuration/configuration';
 
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
@@ -19,17 +19,15 @@ import { Wishlist } from './wishlists/entities/wishlist.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: config().db.host,
-      port: config().db.port,
-      username: config().db.username,
-      password: config().db.password,
-      database: config().db.database,
+      host: configuration().database.host,
+      port: configuration().database.port,
+      username: configuration().database.username,
+      password: configuration().database.password,
+      database: configuration().database.database,
       entities: [User, Wish, Offer, Wishlist],
       synchronize: true,
     }),
-    ConfigModule.forRoot({
-      load: [config],
-    }),
+    ConfigModule.forRoot({ load: [configuration] }),
     UsersModule,
     OffersModule,
     WishesModule,

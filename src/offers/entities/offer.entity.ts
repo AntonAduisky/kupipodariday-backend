@@ -1,10 +1,24 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { IsBoolean, IsNotEmpty, NotEquals } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
+import { DefaultEntity } from 'src/utils/default.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
+import { Entity, Column, ManyToOne } from 'typeorm';
 
 @Entity()
-export class Offer {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Offer extends DefaultEntity {
+  @ManyToOne(() => User, (user) => user.offers)
+  user: User;
 
-  @Column()
-  isTrue: boolean;
+  @ManyToOne(() => Wish, (wish) => wish.offers)
+  @IsNotEmpty()
+  item: Wish;
+
+  @Column({ default: 0, scale: 2 })
+  @IsNotEmpty()
+  @NotEquals(0)
+  amount: number;
+
+  @Column({ default: false })
+  @IsBoolean()
+  hidden: boolean;
 }

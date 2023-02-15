@@ -7,11 +7,13 @@ async function bootstrap() {
     logger: ['error', 'warn'],
     cors: true,
   });
+
   app.use(
     helmet({
       contentSecurityPolicy: false,
     }),
   );
+
   await app.listen(3000);
 }
 bootstrap();

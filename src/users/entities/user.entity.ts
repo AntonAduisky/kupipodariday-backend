@@ -39,7 +39,7 @@ export class User extends DefaultEntity {
   @MinLength(6, { message: 'Минимум 6 символов' })
   password: string;
 
-  @Column({ default: 'https://i.pravatar.cc/300' })
+  @Column({ default: 'https://i.pravatar.cc/150' })
   @IsUrl()
   @IsOptional()
   avatar: string;

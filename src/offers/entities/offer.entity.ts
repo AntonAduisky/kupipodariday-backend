@@ -13,7 +13,11 @@ export class Offer extends DefaultEntity {
   @IsNotEmpty()
   item: Wish;
 
-  @Column({ default: 0, scale: 2 })
+  @Column({
+    default: 0,
+    scale: 2,
+    // type: 'real',
+  })
   @IsNotEmpty()
   @NotEquals(0)
   amount: number;

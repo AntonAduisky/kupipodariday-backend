@@ -1,26 +1,53 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+import { hash } from '../utils/bcrypt.helpers';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  async createUser(createUserDto: CreateUserDto) {
+    try {
+      const hashedPassword = await hash(createUserDto.password);
+      const createdUser = this.userRepository.create({
+        ...createUserDto,
+        password: hashedPassword,
+      });
+      return await this.userRepository.save(createdUser);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  findUserById(id: number) {
+    return this.userRepository.findOneBy({ id });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findUserByUsername(username: string) {
+    return this.userRepository.findOneBy({ username });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findManyUsers(user) {
+    return await this.userRepository.find({
+      where: [{ email: user.query }, { username: user.query }],
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async updateUserById(id: number, user: UpdateUserDto) {
+    if (user.password) {
+      const hashedPassword = await hash(user.password);
+      return this.userRepository.update(id, {
+        ...user,
+        password: hashedPassword,
+      });
+    }
+    return this.userRepository.update(id, user);
   }
 }

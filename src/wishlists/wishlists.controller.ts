@@ -6,40 +6,56 @@ import {
   Patch,
   Param,
   Delete,
+  NotFoundException,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
-@Controller('wishlists')
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
-  @Post()
-  create(@Body() createWishlistDto: CreateWishlistDto) {
-    return this.wishlistsService.create(createWishlistDto);
-  }
-
+  @UseGuards(JwtGuard)
   @Get()
-  findAll() {
-    return this.wishlistsService.findAll();
+  async findAllWishlists() {
+    return this.wishlistsService.findAllWishlists();
   }
 
+  @UseGuards(JwtGuard)
+  @Post()
+  async createWishlist(
+    @Req() req,
+    @Body() createWishlistDto: CreateWishlistDto,
+  ) {
+    return this.wishlistsService.createWishlist(req.user, createWishlistDto);
+  }
+
+  @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishlistsService.findOne(+id);
+  async findWishlistById(@Param('id') id: number) {
+    const wishlist = await this.wishlistsService.findWishlistById(id);
+    if (!wishlist) {
+      throw new NotFoundException('Не найдено');
+    }
+    return wishlist;
   }
 
+  @UseGuards(JwtGuard)
   @Patch(':id')
-  update(
-    @Param('id') id: string,
+  updateWishlistById(
+    @Param('id') id: number,
     @Body() updateWishlistDto: UpdateWishlistDto,
   ) {
-    return this.wishlistsService.update(+id, updateWishlistDto);
+    return this.wishlistsService.updateWishlistById(id, updateWishlistDto);
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishlistsService.remove(+id);
+  removeWishlistById(@Param('id') id: number) {
+    return this.wishlistsService.removeWishlistById(id);
   }
 }

@@ -3,8 +3,8 @@ import { OffersService } from './offers.service';
 import { OffersController } from './offers.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Offer } from './entities/offer.entity';
-import { WishesModule } from 'src/wishes/wishes.module';
-import { UsersModule } from 'src/users/users.module';
+import { WishesModule } from '../wishes/wishes.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Offer]), WishesModule, UsersModule],

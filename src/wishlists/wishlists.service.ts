@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
@@ -14,7 +14,10 @@ export class WishlistsService {
     private readonly wishlistsRepository: Repository<Wishlist>,
   ) {}
 
-  async createWishlist(user: User, createWishlistDto: CreateWishlistDto) {
+  async createWishlist(
+    user: User,
+    createWishlistDto: CreateWishlistDto,
+  ): Promise<Wishlist> {
     const { itemsId, ...rest } = createWishlistDto;
     const wishes = itemsId.map((id: number) => ({ id } as Wish));
     const wishlist = this.wishlistsRepository.create({
@@ -25,24 +28,38 @@ export class WishlistsService {
     return this.wishlistsRepository.save(wishlist);
   }
 
-  async findAllWishlists() {
+  async findAllWishlists(): Promise<Wishlist[]> {
     return this.wishlistsRepository.find({
       relations: ['items', 'owner'],
     });
   }
 
-  async findWishlistById(id: number) {
+  async findWishlistById(id: number): Promise<Wishlist> {
     return this.wishlistsRepository.findOne({
       where: { id },
       relations: ['items', 'owner'],
     });
   }
 
-  async updateWishlistById(id: number, updateWishlistDto: UpdateWishlistDto) {
+  async updateWishlistById(
+    id: number,
+    updateWishlistDto: UpdateWishlistDto,
+    userId: number,
+  ) {
+    const wishlist = await this.findWishlistById(id);
+    if (wishlist.owner.id !== userId) {
+      throw new BadRequestException();
+    }
     return this.wishlistsRepository.update(id, updateWishlistDto);
   }
 
-  async removeWishlistById(id: number) {
-    return this.wishlistsRepository.delete(id);
+  async removeWishlistById(id: number, userId: number) {
+    const wishlist = await this.findWishlistById(id);
+    if (wishlist.owner.id !== userId) {
+      throw new BadRequestException();
+    }
+
+    await this.wishlistsRepository.delete(id);
+    return wishlist;
   }
 }

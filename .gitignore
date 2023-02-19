@@ -2,10 +2,8 @@
 /dist
 /node_modules
 
+# environment
 .env
-.env.example
-.env.local
-.env.staging
 
 # Logs
 logs

@@ -13,14 +13,14 @@ export class WishesService {
     private readonly wishesRepository: Repository<Wish>,
   ) {}
 
-  async createWish(user: User, createWishDto: CreateWishDto) {
+  async createWish(user: User, createWishDto: CreateWishDto): Promise<Wish> {
     return await this.wishesRepository.save({
       ...createWishDto,
       owner: user,
     });
   }
 
-  async findWishById(id: number) {
+  async findWishById(id: number): Promise<Wish> {
     const wish = await this.wishesRepository.findOne({
       relations: {
         owner: { wishes: true, wishlists: true, offers: true },
@@ -35,7 +35,7 @@ export class WishesService {
     return wish;
   }
 
-  findWishesByOwner(ownerId: number) {
+  findWishesByOwner(ownerId: number): Promise<Wish[]> {
     return this.wishesRepository.find({
       where: { owner: { id: ownerId } },
       relations: ['offers', 'owner'],
@@ -46,7 +46,7 @@ export class WishesService {
     return this.wishesRepository.find({ take: 10, order: { copied: 'DESC' } });
   }
 
-  async findLastWishes() {
+  async findLastWishes(): Promise<Wish[]> {
     return this.wishesRepository.find({
       take: 40,
       order: { createdAt: 'DESC' },

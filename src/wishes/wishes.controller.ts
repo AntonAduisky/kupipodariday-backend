@@ -16,6 +16,7 @@ import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { UpdateWishDto } from './dto/update-wish.dto';
+import { Wish } from './entities/wish.entity';
 
 @Controller('wishes')
 export class WishesController {
@@ -23,25 +24,25 @@ export class WishesController {
 
   @UseGuards(JwtGuard)
   @Post()
-  createWish(@Req() req, @Body() createWishDto: CreateWishDto) {
+  createWish(@Req() req, @Body() createWishDto: CreateWishDto): Promise<Wish> {
     return this.wishesService.createWish(req.user, createWishDto);
   }
 
   @Get('last')
-  async findLastWishes() {
+  async findLastWishes(): Promise<Wish[]> {
     const lastWishes = await this.wishesService.findLastWishes();
     return lastWishes;
   }
 
   @Get('top')
-  async findTopWishes() {
+  async findTopWishes(): Promise<Wish[]> {
     const topWishes = await this.wishesService.findTopWishes();
     return topWishes;
   }
 
   @UseGuards(JwtGuard)
   @Get(':id')
-  async findWishById(@Param('id') id: number) {
+  async findWishById(@Param('id') id: number): Promise<Wish> {
     const wish = await this.wishesService.findWishById(id);
     if (!wish) {
       throw new NotFoundException('Подарка не существует');
@@ -56,7 +57,7 @@ export class WishesController {
     @Req() req,
     @Param('id') id: number,
     @Body() updateWishDto: UpdateWishDto,
-  ) {
+  ): Promise<Wish> {
     const wish = await this.wishesService.findWishById(id);
     if (wish.owner.id === req.user.id) {
       await this.wishesService.updateWish(id, updateWishDto);
@@ -68,7 +69,7 @@ export class WishesController {
 
   @UseGuards(JwtGuard)
   @Delete(':id')
-  async deleteWish(@Req() req, @Param('id') id: number) {
+  async deleteWish(@Req() req, @Param('id') id: number): Promise<Wish> {
     const wish = await this.wishesService.findWishById(id);
     if (wish.owner.id === req.user.id) {
       await this.wishesService.removeWish(id);

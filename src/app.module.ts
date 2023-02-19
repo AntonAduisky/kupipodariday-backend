@@ -17,6 +17,7 @@ import { Wishlist } from './wishlists/entities/wishlist.entity';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ load: [configuration] }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: configuration().database.host,
@@ -25,9 +26,8 @@ import { Wishlist } from './wishlists/entities/wishlist.entity';
       password: configuration().database.password,
       database: configuration().database.database,
       entities: [User, Wish, Offer, Wishlist],
-      synchronize: true,
+      synchronize: configuration().database.synchronize,
     }),
-    ConfigModule.forRoot({ load: [configuration] }),
     UsersModule,
     OffersModule,
     WishesModule,

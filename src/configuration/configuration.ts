@@ -6,6 +6,7 @@ export default () => ({
     database: process.env.DATABASE_NAME || 'kupipodariday',
     username: process.env.DATABASE_USER || 'student',
     password: process.env.DATABASE_PASSWORD || 'student',
+    synchronize: !!process.env.SYNCHRONIZE,
   },
-  JWT_Secret: 'JWT_SECRET',
+  JWT_SECRET: process.env.JWT_SECRET,
 });

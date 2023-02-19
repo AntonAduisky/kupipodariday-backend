@@ -14,18 +14,21 @@ export class OffersService {
     private readonly wishesService: WishesService,
   ) {}
 
-  async findAllOffers() {
+  async findAllOffers(): Promise<Offer[]> {
     return this.offersRepository.find({ relations: ['item', 'user'] });
   }
 
-  async findOfferById(id: number) {
+  async findOfferById(id: number): Promise<Offer> {
     return this.offersRepository.findOne({
       where: { id },
       relations: ['item', 'user'],
     });
   }
 
-  async createOffer(user: User, createOfferDto: CreateOfferDto) {
+  async createOffer(
+    user: User,
+    createOfferDto: CreateOfferDto,
+  ): Promise<Offer> {
     const wish = await this.wishesService.findWishById(createOfferDto.itemId);
     if (createOfferDto.amount < 0) {
       throw new BadRequestException('Cумма должна быть больше 0');

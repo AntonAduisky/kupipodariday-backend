@@ -17,7 +17,7 @@ import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 
 @Entity()
 export class User extends DefaultEntity {
-  @Column()
+  @Column({ unique: true })
   @IsString()
   @IsNotEmpty()
   @Length(2, 30, { message: 'Минимум 2 символа, максимум 30 символов' })
@@ -29,7 +29,7 @@ export class User extends DefaultEntity {
   @MaxLength(200, { message: 'Максимум 200 символов' })
   about: string;
 
-  @Column()
+  @Column({ unique: true })
   @IsEmail()
   @IsNotEmpty()
   email: string;

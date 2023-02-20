@@ -37,10 +37,13 @@ export class UsersService {
   }
 
   async findManyUsers(user): Promise<User[]> {
-    await delete user.password;
     const users = await this.userRepository.find({
       where: [{ email: user.query }, { username: user.query }],
     });
+    users.forEach((user) => {
+      delete user.password;
+    });
+
     return users;
   }
 

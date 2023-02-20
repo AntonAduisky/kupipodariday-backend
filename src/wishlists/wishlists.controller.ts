@@ -49,12 +49,8 @@ export class WishlistsController {
     @Req() { user }: { user: User },
     @Param('id') id: number,
     @Body() updateWishlistDto: UpdateWishlistDto,
-  ) {
-    return this.wishlistsService.updateWishlistById(
-      id,
-      updateWishlistDto,
-      user.id,
-    );
+  ): Promise<Wishlist> {
+    return this.wishlistsService.updateWishlist(id, updateWishlistDto, user.id);
   }
 
   @Delete(':id')

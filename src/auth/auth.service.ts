@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -18,6 +18,10 @@ export class AuthService {
 
   public async validate(username: string, password: string) {
     const user = await this.usersService.findUserByUsername(username);
+
+    if (!user) {
+      throw new NotFoundException('Некорректные данные');
+    }
 
     return compare(password, user);
   }

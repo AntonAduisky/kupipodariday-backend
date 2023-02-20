@@ -3,7 +3,7 @@ import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
@@ -31,8 +31,14 @@ export class WishesService {
     if (!wish) {
       throw new NotFoundException('Не существует');
     }
-
+    delete wish.owner.password;
     return wish;
+  }
+
+  async findManyWishesById(id: number[]): Promise<Wish[]> {
+    return this.wishesRepository.find({
+      where: { id: In(id) },
+    });
   }
 
   findWishesByOwner(ownerId: number): Promise<Wish[]> {

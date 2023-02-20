@@ -6,12 +6,14 @@ import { Wishlist } from './entities/wishlist.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from '../wishes/entities/wish.entity';
+import { WishesService } from 'src/wishes/wishes.service';
 
 @Injectable()
 export class WishlistsService {
   constructor(
     @InjectRepository(Wishlist)
     private readonly wishlistsRepository: Repository<Wishlist>,
+    private readonly wishesService: WishesService,
   ) {}
 
   async createWishlist(
@@ -41,16 +43,27 @@ export class WishlistsService {
     });
   }
 
-  async updateWishlistById(
+  async updateWishlist(
     id: number,
     updateWishlistDto: UpdateWishlistDto,
     userId: number,
-  ) {
+  ): Promise<Wishlist> {
     const wishlist = await this.findWishlistById(id);
+    const wishes = await this.wishesService.findManyWishesById(
+      updateWishlistDto.itemsId || [],
+    );
+
     if (wishlist.owner.id !== userId) {
       throw new BadRequestException();
     }
-    return this.wishlistsRepository.update(id, updateWishlistDto);
+
+    return await this.wishlistsRepository.save({
+      ...wishlist,
+      name: updateWishlistDto.name,
+      image: updateWishlistDto.image,
+      description: updateWishlistDto.description,
+      items: wishes.concat(wishlist.items),
+    });
   }
 
   async removeWishlistById(id: number, userId: number) {

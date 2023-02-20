@@ -33,15 +33,15 @@ export class UsersService {
   }
 
   async findUserByUsername(username: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ username });
-    delete user.password;
-    return user;
+    return await this.userRepository.findOneBy({ username });
   }
 
   async findManyUsers(user): Promise<User[]> {
-    return await this.userRepository.find({
+    await delete user.password;
+    const users = await this.userRepository.find({
       where: [{ email: user.query }, { username: user.query }],
     });
+    return users;
   }
 
   async updateUserById(

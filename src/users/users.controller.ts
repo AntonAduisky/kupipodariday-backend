@@ -7,6 +7,7 @@ import {
   Patch,
   Param,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,6 +15,9 @@ import { WishesService } from 'src/wishes/wishes.service';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { User } from './entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
+import { UserInterceptor } from 'src/utils/interceptors/user.interceptor';
+
+@UseInterceptors(UserInterceptor)
 @UseGuards(JwtGuard)
 @Controller('users')
 export class UsersController {
@@ -27,6 +31,7 @@ export class UsersController {
     return this.usersService.findUserById(req.user.id);
   }
 
+  //auth
   @Get(':username')
   async findUserByUsername(@Param('username') username: string): Promise<User> {
     return await this.usersService.findUserByUsername(username);

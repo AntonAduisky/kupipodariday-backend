@@ -62,7 +62,7 @@ export class WishlistsService {
       name: updateWishlistDto.name,
       image: updateWishlistDto.image,
       description: updateWishlistDto.description,
-      items: wishes.concat(wishlist.items),
+      items: wishes,
     });
   }
 

@@ -11,12 +11,14 @@ import {
   Req,
   UseGuards,
   NotFoundException,
+  UseInterceptors,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
+import { WishInterceptor } from 'src/utils/interceptors/wish.interceptor';
 
 @Controller('wishes')
 export class WishesController {
@@ -28,18 +30,21 @@ export class WishesController {
     return this.wishesService.createWish(req.user, createWishDto);
   }
 
+  @UseInterceptors(WishInterceptor)
   @Get('last')
   async findLastWishes(): Promise<Wish[]> {
     const lastWishes = await this.wishesService.findLastWishes();
     return lastWishes;
   }
 
+  @UseInterceptors(WishInterceptor)
   @Get('top')
   async findTopWishes(): Promise<Wish[]> {
     const topWishes = await this.wishesService.findTopWishes();
     return topWishes;
   }
 
+  @UseInterceptors(WishInterceptor)
   @UseGuards(JwtGuard)
   @Get(':id')
   async findWishById(@Param('id') id: number): Promise<Wish> {
@@ -51,6 +56,7 @@ export class WishesController {
     return wish;
   }
 
+  @UseInterceptors(WishInterceptor)
   @UseGuards(JwtGuard)
   @Patch(':id')
   async updateWish(
@@ -67,6 +73,7 @@ export class WishesController {
     }
   }
 
+  @UseInterceptors(WishInterceptor)
   @UseGuards(JwtGuard)
   @Delete(':id')
   async deleteWish(@Req() req, @Param('id') id: number): Promise<Wish> {
@@ -79,6 +86,7 @@ export class WishesController {
     }
   }
 
+  @UseInterceptors(WishInterceptor)
   @UseGuards(JwtGuard)
   @Post(':id/copy')
   async copyWish(@Req() req, @Param('id') id: number) {

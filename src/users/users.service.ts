@@ -32,6 +32,7 @@ export class UsersService {
     return user;
   }
 
+  //auth
   async findUserByUsername(username: string): Promise<User> {
     return await this.userRepository.findOneBy({ username });
   }
